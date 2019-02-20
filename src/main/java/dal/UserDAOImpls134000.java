@@ -24,7 +24,16 @@ public class UserDAOImpls134000 implements IUserDAO {
         //TODO Implement this
         Connection c = createConnection();
 
-        return null;
+
+        //TODO: Make a user from the resultset
+        UserDTO user = new UserDTO();
+
+        try {
+            c.close();
+        } catch (SQLException e) {
+            throw new DALException(e.getMessage());
+        }
+        return user;
     }
 
 
