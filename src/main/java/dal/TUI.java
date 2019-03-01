@@ -58,6 +58,7 @@ public class TUI {
 
     private void createUser() {
         boolean success = false;
+        String tempID = "";
         int userID = 0;
         String userName = "";
         String ini = "";
@@ -69,7 +70,8 @@ public class TUI {
         do {
             try {
                 System.out.println("Vælg et brugerID mellem 11-99");
-                userID = input.nextInt();
+                tempID = input.next();
+                userID = Integer.parseInt(tempID);
                 if(userID >= 11 && userID <= 99) {
                     if(IDchecker(userID)) {
                         success = true;
