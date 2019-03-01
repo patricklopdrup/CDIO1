@@ -194,18 +194,46 @@ public class TUI {
                 System.out.println("Brugeren findes ikke eller ingen internetforbindelse\n");
             }
         }while (!success);
+
+        success = false;
         System.out.println("Skriv \"-\" [bindestreg] for at springe over felt, hvis du ikke vil rette alle oplysninger.");
-        System.out.print("Nyt brugernavn: ");
-        userName = input.next();
-        System.out.print("Nye initialer: ");
-        ini = input.next();
-        System.out.print("Nyt CPR-nummer: ");
-        cpr = input.next();
-        System.out.print("Ny adgangskode: ");
-        passwordToUpdate = input.next();
-        // FIXME: 28-02-2019 ligesom længere nede
-        System.out.print("Nye roller(skriv ', ' mellem roller [komma mellemrum]: )");
-        roles = input.next();
+        do {
+            System.out.print("Nyt brugernavn: ");
+            userName = input.next();
+            if(userName.length() >= 2 && userName.length() <= 20) { success = true; }
+        } while (!success);
+        success = false;
+        do {
+            System.out.print("Nye initialer: ");
+            ini = input.next();
+            if(ini.length() >= 2 && ini.length() <=4) { success = true; }
+        } while (!success);
+        success = false;
+        do {
+            System.out.print("Nyt CPR-nummer: ");
+            cpr = input.next();
+            if(cpr.length() == 10) { success = true; }
+        } while (!success);
+        success = false;
+        do {
+            System.out.print("Ny adgangskode: ");
+            passwordToUpdate = input.next();
+            if(passwordToUpdate.length() >= 6) { success = true; }
+        } while (!success);
+        success = false;
+        do {
+            System.out.print("Nye roller(skriv ', ' mellem roller [komma mellemrum]: )");
+            roles = input.next();
+            String[] tempRoles = roles.split(", ");
+            int successCounter = 0;
+            for(int i = 0; i < tempRoles.length; i++) {
+                if(tempRoles[i].equalsIgnoreCase("/*SKRIV HER*/")) { // TODO: 01-03-2019 sammenlign med de roller man må være
+                    successCounter++;
+                }
+            }
+            if(successCounter == tempRoles.length) { success = true; }
+        } while (!success);
+
 
         try {
             String passEncrypt;
