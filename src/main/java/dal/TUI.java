@@ -42,7 +42,6 @@ public class TUI {
         } while(!success);
     }
 
-
     public void menu() {
         boolean endProgram = false;
         while(!endProgram) {
@@ -59,13 +58,35 @@ public class TUI {
 
     private void createUser() {
         boolean success = false;
+        int userID = 0;
         String userName = "";
         String ini = "";
         String cpr = "";
         String password = "";
         String roles = ""; // FIXME: 27-02-2019 skal man selv vælge roles? hvad med userID?
         System.out.println("--- Opret en bruger ---");
+        //id
+        do {
+            try {
+                System.out.println("Vælg et brugerID mellem 11-99");
+                userID = input.nextInt();
+                if(userID >= 11 && userID <= 99) {
+                    if(IDchecker(userID)) {
+                        success = true;
+                    } else {
+                        System.out.println("Dette ID er allerede taget. Vælg et nyt.");
+                    }
+                } else {
+                    System.out.println("ID skal være mellem 11-99");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Skriv et tal.");
+            }
+            // TODO: 01-03-2019 skriv pass -> check ledighed -> giv dem id
+        } while (!success);
+
         //username
+        success = false;
         do {
             try {
                 System.out.print("Vælg brugernavn (2-20 tegn): ");
@@ -75,7 +96,7 @@ public class TUI {
                 } else {
                     System.out.println("Brugernavn skal være mellem 2-20 tegn.");
                 }
-            } catch (Exception e) { // FIXME: 27-02-2019 måske skal det være DALException??
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         } while (!success);
@@ -83,7 +104,7 @@ public class TUI {
         //ini
         success = false;
         do {
-            try { // FIXME: 27-02-2019 hvis vi ikke vil tjekke for space, skal try/catch slettes
+            try {
                 System.out.print("Skriv initialer(2-4 tegn): ");
                 ini = input.next();
                 if(ini.length() >= 2 && ini.length() <= 4) {
@@ -102,6 +123,7 @@ public class TUI {
             try {
                 System.out.print("Skriv CPR-nummer(kun tal): ");
                 cpr = input.next();
+                Integer.parseInt(cpr);
                 if(cpr.length() == 10) {
                     success = true;
                 } else {
@@ -169,7 +191,7 @@ public class TUI {
 
     private void listUsers(UserDAOImpl iDAO) {
         try{
-            System.out.println("Printing users....");
+            System.out.println("Printing users...");
             List<UserDTO> userList = iDAO.getUserList();
             for(UserDTO userDTO : userList){
                 System.out.println(userDTO);
@@ -181,20 +203,31 @@ public class TUI {
 
     private void updateUser() {
         boolean success = false;
+        boolean firstgo = false;
+        String tempID;
+        int userID = 0;
         String password;
         String userName;
         String ini;
         String cpr;
-        String passwordToUpdate;
         String roles;
         UserDTO userToUpdate;
 
         System.out.println("--- Ret bruger ---");
         do {
-            System.out.print("Skriv dit password for at rette: ");
-            password = input.next();
+            do {
+                try {
+                    System.out.print("Skriv dit brugerID for at rette: ");
+                    tempID = input.next();
+                    userID = Integer.parseInt(tempID);
+                    firstgo = true;
+                } catch (NumberFormatException e) {
+                    System.out.println("ID skal være et tal.");
+                }
+            } while(!firstgo);
+
             try {
-                if(userDAO.getUser(password).getUserName() != null) {
+                if(userDAO.getUser(userID).getUserName() != null) {
                     success = true;
                 } else {
                     System.out.println("Brugeren findes ikke.");
@@ -236,8 +269,8 @@ public class TUI {
         success = false;
         do {
             System.out.print("Ny adgangskode: ");
-            passwordToUpdate = input.next();
-            if(passwordToUpdate.equals("-") || passwordToUpdate.length() >= 6) { success = true; }
+            password = input.next();
+            if(password.equals("-") || password.length() >= 6) { success = true; }
         } while (!success);
         success = false;
         do {
@@ -260,20 +293,20 @@ public class TUI {
         try {
             String passEncrypt;
             if(userName.equals("-")) {
-                userName = userDAO.getUser(password).getUserName();
+                userName = userDAO.getUser(userID).getUserName();
             }
             if(ini.equals("-")) {
-                ini = userDAO.getUser(password).getIni();
+                ini = userDAO.getUser(userID).getIni();
             }
             if(cpr.equals("-")) {
-                cpr = userDAO.getUser(password).getCpr();
+                cpr = userDAO.getUser(userID).getCpr();
             }
-            if(passwordToUpdate.equals("-")) {
-                passwordToUpdate = password;
+            if(password.equals("-")) {
+                password = userDAO.getUser(userID).getPassword();
             }
-            passEncrypt = encryptPassword(passwordToUpdate);
+            passEncrypt = encryptPassword(password);
             if(roles.equals("-")) {
-                roles = userDAO.getUser(password).getArrayAsString();
+                roles = userDAO.getUser(userID).getArrayAsString();
             }
 
             System.out.println("\nEr du sikker på, du vil rette brugeren: " +
@@ -285,11 +318,11 @@ public class TUI {
             System.out.print("[Ja], [Nej]");
             confirme = input.next();
             if(confirme.equalsIgnoreCase("ja") || confirme.equalsIgnoreCase("yes")) {
-                userToUpdate = userDAO.getUser(password);
+                userToUpdate = userDAO.getUser(userID);
                 userToUpdate.setUserName(userName);
                 userToUpdate.setIni(ini);
                 userToUpdate.setCpr(cpr);
-                userToUpdate.setPassword(passwordToUpdate);
+                userToUpdate.setPassword(password);
                 // FIXME: 28-02-2019 ordne roles, så den virker, når man ikke skriver noget i den står også højere oppe
                 userToUpdate.setRoles(Arrays.asList(roles.split(", ")));
                 userDAO.updateUser(userToUpdate);
@@ -303,7 +336,9 @@ public class TUI {
     }
 
     private void deleteUser() {
-
+        System.out.println("--- Slet bruger ---");
+        System.out.print("Skriv adgangskode for at slette bruger: ");
+        // TODO: 01-03-2019 slet ved at skrive userID
     }
 
     private String encryptPassword(String password) {
@@ -314,5 +349,21 @@ public class TUI {
             passMid += "*";
         }
         return passStart + passMid + passEnd;
+    }
+
+    //checks if the password is free to use
+    public boolean IDchecker(int userID) {
+        try {
+            for (UserDTO users : userDAO.getUserList()) {
+                if (users.getUserID() == userID) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        } catch (IUserDAO.DALException e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
     }
 }

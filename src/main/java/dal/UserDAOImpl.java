@@ -19,11 +19,11 @@ public class UserDAOImpl implements IUserDAO{
         }
     }
     @Override
-    public UserDTO getUser(String password) throws DALException {
+    public UserDTO getUser(int userID) throws DALException {
         Connection c = createConnection();
         try {
             Statement st = c.createStatement();
-            ResultSet resultSet = st.executeQuery("select * from " + database + " where password = '" + password + "'");
+            ResultSet resultSet = st.executeQuery("select * from " + database + " where userID = " + userID);
 
             UserDTO user = new UserDTO();
             while(resultSet.next()) {
