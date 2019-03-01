@@ -31,7 +31,7 @@ public class TUI {
         do {
             try {
                 System.out.print("Vælg en funktion: ");
-                tempFunc = input.next();
+                tempFunc = input.nextLine();
                 System.out.println();
                 function = Integer.parseInt(tempFunc);
                 if(function >= 1 && function <= 5) {
@@ -74,7 +74,7 @@ public class TUI {
         do {
             try {
                 System.out.println("Vælg et brugerID mellem 11-99");
-                tempID = input.next();
+                tempID = input.nextLine();
                 userID = Integer.parseInt(tempID);
                 if(userID >= 11 && userID <= 99) {
                     int res = msgBox("Er du sikker på dit ID skal være: "+userID);
@@ -97,7 +97,7 @@ public class TUI {
         do {
             try {
                 System.out.print("Vælg brugernavn (2-20 tegn): ");
-                userName = input.next();
+                userName = input.nextLine();
                 int res = msgBox("Er du sikker på dit brugernavn skal være: "+userName);
                 if(userName.length() >= 2 && userName.length() <= 20 && res == 0) {
                     success = true;
@@ -114,7 +114,7 @@ public class TUI {
         do {
             try {
                 System.out.print("Skriv initialer(2-4 tegn): ");
-                ini = input.next();
+                ini = input.nextLine();
                 int res = msgBox("Er du sikker på dine initialer skal være: "+ini);
                 if(ini.length() >= 2 && ini.length() <= 4 && res == 0) {
                     success = true;
@@ -131,7 +131,7 @@ public class TUI {
         do {
             try {
                 System.out.print("Skriv CPR-nummer(kun tal): ");
-                cpr = input.next();
+                cpr = input.nextLine();
                 Long.parseLong(cpr);
                 int res = msgBox("Er du sikker på dit CPR-nummer skal være: "+cpr);
                 if(cpr.length() == 10 && res == 0) {
@@ -163,11 +163,10 @@ public class TUI {
         String[] temparr;
         do {
             System.out.print("Vælg roller (skriv ', ' mellem roller [komma mellemrum]): ");
-            tempRoles = input.next();
+            tempRoles = input.nextLine();
             temparr = tempRoles.split(", ");
             roles = new ArrayList<>(Arrays.asList(temparr));
-            System.out.println(temparr[0]);
-            System.out.println(roles.get(0));
+            System.out.println(roles);
             if(isRoleFree(roles)) {
                 success = true;
             }
@@ -190,6 +189,7 @@ public class TUI {
             user.setIni(ini);
             user.setCpr(cpr);
             user.setPassword(password);
+            user.setRoles(roles);
             try {
                 userDAO.createUser(user);
                 System.out.println("Brugeren er oprettet!\n");
@@ -230,7 +230,7 @@ public class TUI {
             do {
                 try {
                     System.out.print("Skriv dit brugerID for at rette: ");
-                    tempID = input.next();
+                    tempID = input.nextLine();
                     if(isParsableInt(tempID)) { firstgo = true; }
                 } catch (NumberFormatException e) {
                     System.out.println("ID skal være et tal.");
@@ -253,19 +253,19 @@ public class TUI {
         System.out.println("Skriv \"-\" [bindestreg] for at springe over felt, hvis du ikke vil rette alle oplysninger.");
         do {
             System.out.print("Nyt brugernavn: ");
-            userName = input.next();
+            userName = input.nextLine();
             if(userName.equals("-") || userName.length() >= 2 && userName.length() <= 20) { success = true; }
         } while (!success);
         success = false;
         do {
             System.out.print("Nye initialer: ");
-            ini = input.next();
+            ini = input.nextLine();
             if(ini.equals("-") || ini.length() >= 2 && ini.length() <=4) { success = true; }
         } while (!success);
         success = false;
         do {
             System.out.print("Nyt CPR-nummer: ");
-            cpr = input.next();
+            cpr = input.nextLine();
             if(cpr.equals("-")) {
                 success = true;
             } else if(cpr.length() == 10) {
@@ -280,13 +280,13 @@ public class TUI {
         success = false;
         do {
             System.out.print("Ny adgangskode: ");
-            password = input.next();
+            password = input.nextLine();
             if(password.equals("-") || password.length() >= 6) { success = true; }
         } while (!success);
         success = false;
         do {
             System.out.print("Nye roller(skriv ', ' mellem roller [komma mellemrum]: )");
-            roles = input.next();
+            roles = input.nextLine();
             String[] tempRoles = roles.split(", ");
             int successCounter = 0;
             if(roles.equals("-")) {
@@ -327,7 +327,7 @@ public class TUI {
                     "\nPassword: " + passEncrypt);
             String confirme;
             System.out.print("[Ja], [Nej]");
-            confirme = input.next();
+            confirme = input.nextLine();
             if(confirme.equalsIgnoreCase("ja") || confirme.equalsIgnoreCase("yes")) {
                 userToUpdate = userDAO.getUser(userID);
                 userToUpdate.setUserName(userName);
@@ -353,7 +353,7 @@ public class TUI {
 
         do{
             System.out.print("Skriv userID[int] til den bruger der skal slettes: ");
-            tempUserID = input.next();
+            tempUserID = input.nextLine();
 
             if(isParsableInt(tempUserID)){
                 userID = Integer.parseInt(tempUserID);
@@ -364,13 +364,13 @@ public class TUI {
         }while(!isParsableInt(tempUserID));
 
         System.out.print("Indtast koden til denne bruger: ");
-        String pw = input.next();
+        String pw = input.nextLine();
         try{
 
             if(!IDchecker(userID) && userDAO.getUser(userID).getPassword().equals(pw)){
                 System.out.println("Er du sikker på, at du vil slette brugeren: " + userID + "?");
 
-                String validation = input.next();
+                String validation = input.nextLine();
                 if(validation.equalsIgnoreCase("yes") || validation.equalsIgnoreCase("ja")){
                     userDAO.deleteUser(userID);
                     System.out.println("Brugeren med userID: " + userID + " er nu blevet slettet..");
@@ -431,12 +431,13 @@ public class TUI {
     public boolean isRoleFree(List<String> roles) {
         List<String> possibleRoles = new ArrayList<>(Arrays.asList("admin", "pharmacist", "foreman", "operator"));
         int counter = 0;
-
-        if(possibleRoles.contains(roles)) {
-            counter++;
+        for (int i = 0; i < roles.size(); i++) {
+            System.out.println(roles.get(i));
+            System.out.println(possibleRoles.contains(roles.get(i)));
+            if (!possibleRoles.contains(roles.get(i))) return false;
         }
 
-        return counter == roles.size();
+        return true;
     }
 
 }
