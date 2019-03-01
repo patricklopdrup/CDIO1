@@ -72,11 +72,12 @@ public class UserDAOImpl implements IUserDAO{
 
     @Override
     public void createUser(UserDTO user) throws DALException {
+        String roles = String.join(", ", user.getRoles());
         Connection c = createConnection();
         try {
             PreparedStatement st = c.prepareStatement("insert into " + database + "values('"
                     + user.getUserID() + "', '" + user.getUserName() + "', '" + user.getIni() + "', '" + user.getCpr()
-                    + "', '" + user.getPassword() + "', '" + user.getArrayAsString() + "')");
+                    + "', '" + user.getPassword() + "', '" + roles + "')");
             st.executeUpdate();
         } catch (SQLException e) {
             throw new DALException(e.getMessage());
