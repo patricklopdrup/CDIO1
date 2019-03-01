@@ -164,8 +164,8 @@ public class TUI {
 
         //confirmation
         String passEncrypt = encryptPassword(password);
-        int res = msgBox("\nEr du sikker på, du vil oprette brugeren: " +
-                "\nBrugernavn: " + userName +
+        int res = msgBox("\nBrugernavn: " + userName +
+                "\nBruger-ID: " + userID +
                 "\nInitialer: " + ini +
                 "\nCPR-nummer: " + cpr.substring(0, 6) + "-xxxx" +
                 "\nPassword: " + passEncrypt +
