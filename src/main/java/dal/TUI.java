@@ -58,7 +58,7 @@ public class TUI {
 
     private void createUser() {
         boolean success = false;
-        int userID;
+        int userID = 0;
         String userName = "";
         String ini = "";
         String cpr = "";
@@ -174,6 +174,7 @@ public class TUI {
         System.out.print("[Ja], [Nej]");
         confirme = input.next();
         if(confirme.equalsIgnoreCase("ja") || confirme.equalsIgnoreCase("yes")) {
+            user.setUserID(userID);
             user.setUserName(userName);
             user.setIni(ini);
             user.setCpr(cpr);
