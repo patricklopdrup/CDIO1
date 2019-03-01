@@ -5,6 +5,7 @@ import dto.UserDTO;
 import javax.swing.*;
 import java.sql.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -66,7 +67,8 @@ public class TUI {
         String ini = "";
         String cpr = "";
         String password = "";
-        String roles = ""; // FIXME: 27-02-2019 skal man selv vælge roles? hvad med userID?
+        List<String> roles;
+        String tempRoles = ""; // FIXME: 27-02-2019 skal man selv vælge roles? hvad med userID?
         System.out.println("--- Opret en bruger ---");
         //id
         do {
@@ -156,11 +158,21 @@ public class TUI {
         password = pass.toString();
 
 
-
-        // FIXME: 28-02-2019 lav fix, hvis man vil starte helt forfra
-
         //roles
         success = false;
+        String[] temparr;
+        do {
+            System.out.print("Vælg roller (skriv ', ' mellem roller [komma mellemrum]): ");
+            tempRoles = input.next();
+            temparr = tempRoles.split(", ");
+            roles = new ArrayList<>(Arrays.asList(temparr));
+            System.out.println(temparr[0]);
+            System.out.println(roles.get(0));
+            if(isRoleFree(roles)) {
+                success = true;
+            }
+        } while (!success);
+
 
         //confirmation
         String passEncrypt = encryptPassword(password);
@@ -219,8 +231,7 @@ public class TUI {
                 try {
                     System.out.print("Skriv dit brugerID for at rette: ");
                     tempID = input.next();
-                    userID = Integer.parseInt(tempID);
-                    firstgo = true;
+                    if(isParsableInt(tempID)) { firstgo = true; }
                 } catch (NumberFormatException e) {
                     System.out.println("ID skal være et tal.");
                 }
@@ -416,4 +427,16 @@ public class TUI {
         }
         return parsable;
     }
+
+    public boolean isRoleFree(List<String> roles) {
+        List<String> possibleRoles = new ArrayList<>(Arrays.asList("admin", "pharmacist", "foreman", "operator"));
+        int counter = 0;
+
+        if(possibleRoles.contains(roles)) {
+            counter++;
+        }
+
+        return counter == roles.size();
+    }
+
 }
