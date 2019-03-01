@@ -58,7 +58,7 @@ public class TUI {
 
     private void createUser() {
         boolean success = false;
-        int userID = 0;
+        int userID;
         String userName = "";
         String ini = "";
         String cpr = "";
@@ -123,7 +123,7 @@ public class TUI {
             try {
                 System.out.print("Skriv CPR-nummer(kun tal): ");
                 cpr = input.next();
-                Integer.parseInt(cpr);
+                Long.parseLong(cpr);
                 if(cpr.length() == 10) {
                     success = true;
                 } else {
@@ -357,8 +357,6 @@ public class TUI {
             for (UserDTO users : userDAO.getUserList()) {
                 if (users.getUserID() == userID) {
                     return false;
-                } else {
-                    return true;
                 }
             }
         } catch (IUserDAO.DALException e) {
