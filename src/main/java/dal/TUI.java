@@ -410,6 +410,7 @@ public class TUI {
     {
         final JFrame parent = new JFrame();
         parent.setAlwaysOnTop(true);
+        parent.setSize(400,280);
         return JOptionPane.showConfirmDialog( parent ,infoMessage,"Message", JOptionPane.YES_NO_OPTION);
 
     }
