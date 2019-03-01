@@ -154,7 +154,7 @@ public class TUI {
             if(temppass.equals(password)) {
                 success = true;
             } else {
-                System.out.println("Password mathcer ikke. Prøv igen.");
+                System.out.println("Password matcher ikke. Prøv igen.");
             }
         } while (!success);
 
@@ -163,9 +163,9 @@ public class TUI {
         //roles
         success = false;
 
-        //confimation
+        //confirmation
         String passEncrypt = encryptPassword(password);
-        System.out.println("\nEr du sikker på, du vil oprette brugeren: " +
+        System.out.println("\nEr du sikker på, du vil oprette brugeren?: " +
                 "\nBrugernavn: " + userName +
                 "\nInitialer: " + ini +
                 "\nCPR-nummer: " + cpr.substring(0, 6) + "-xxxx" +
@@ -352,7 +352,7 @@ public class TUI {
         return passStart + passMid + passEnd;
     }
 
-    //checks if the password is free to use
+    //checks if the ID is free to use
     public boolean IDchecker(int userID) {
         try {
             for (UserDTO users : userDAO.getUserList()) {
