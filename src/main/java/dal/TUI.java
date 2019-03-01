@@ -172,7 +172,7 @@ public class TUI {
 
         //confirmation
         String passEncrypt = encryptPassword(password);
-        int res = msgBox("\nEr du sikker på, du vil oprette brugeren?: " +
+        int res = msgBox("\nEr du sikker på, du vil oprette brugeren: " +
                 "\nBrugernavn: " + userName +
                 "\nInitialer: " + ini +
                 "\nCPR-nummer: " + cpr.substring(0, 6) + "-xxxx" +
@@ -405,6 +405,7 @@ public class TUI {
         }
         return true;
     }
+
     public  int msgBox(String infoMessage)
     {
         final JFrame parent = new JFrame();
