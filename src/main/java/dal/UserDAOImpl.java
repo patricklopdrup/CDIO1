@@ -3,6 +3,7 @@ package dal;
 import dto.UserDTO;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +18,6 @@ public class UserDAOImpl implements IUserDAO{
             throw new DALException(e.getMessage());
         }
     }
-
     @Override
     public UserDTO getUser(String password) throws DALException {
         Connection c = createConnection();
@@ -42,10 +42,32 @@ public class UserDAOImpl implements IUserDAO{
         }
     }
 
-    // TODO: 27-02-2019 lav denne
     @Override
     public List<UserDTO> getUserList() throws DALException {
-        return null;
+        Connection c = createConnection();
+
+        List<UserDTO> users = new ArrayList<>();
+
+        try{
+
+            Statement statement = c.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from " + database);
+            while(resultSet.next()) {
+                UserDTO user = new UserDTO();
+
+                List<String> roles = Arrays.asList(resultSet.getString(6).split("\\?\\?\\?"));
+
+                user.setUserID(resultSet.getInt(1));
+                user.setUserName(resultSet.getString(2));
+                user.setIni(resultSet.getString(3));
+                user.setRoles(roles);
+                users.add(user);
+            }
+            c.close();
+            return users;
+        }catch(SQLException e) {
+            throw new DALException(e.getMessage());
+        }
     }
 
     @Override

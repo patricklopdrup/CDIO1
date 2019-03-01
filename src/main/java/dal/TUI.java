@@ -5,6 +5,7 @@ import dto.UserDTO;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class TUI {
@@ -48,11 +49,10 @@ public class TUI {
             showMenu();
             switch (function) {
                 case 1: createUser(); break;
-                case 2: listUsers(); break;
+                case 2: listUsers(userDAO); break;
                 case 3: updateUser(); break;
                 case 4: deleteUser(); break;
-                case 5:
-                    System.out.println("Programmet afsluttes..."); endProgram = true;
+                case 5: System.out.println("Programmet afsluttes..."); endProgram = true;
             }
         }
     }
@@ -107,8 +107,8 @@ public class TUI {
                 } else {
                     System.out.println("Skriv alle 10 tal. Fx 1234567890");
                 }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Skriv kun tal.");
             }
         } while(!success);
 
@@ -161,15 +161,22 @@ public class TUI {
                 System.out.println("Brugeren er oprettet!\n");
             } catch (IUserDAO.DALException e) {
                 System.out.println("Password findes allerede eller ingen internetforbindelse.\n");
-                // FIXME: 28-02-2019 måske tjekke password oppe hvor man skriver password, så de kan vælge et nyt?
             }
         } else {
             System.out.println("Brugeren er ikke oprettet.\n");
         }
     }
 
-    private void listUsers() {
-
+    private void listUsers(UserDAOImpl iDAO) {
+        try{
+            System.out.println("Printing users....");
+            List<UserDTO> userList = iDAO.getUserList();
+            for(UserDTO userDTO : userList){
+                System.out.println(userDTO);
+            }
+        } catch (IUserDAO.DALException e) {
+            System.out.println("Der er ingen internetforbindelse");
+        }
     }
 
     private void updateUser() {
@@ -187,8 +194,11 @@ public class TUI {
             System.out.print("Skriv dit password for at rette: ");
             password = input.next();
             try {
-                userDAO.getUser(password);
-                success = true;
+                if(userDAO.getUser(password).getUserName() != null) {
+                    success = true;
+                } else {
+                    System.out.println("Brugeren findes ikke.");
+                }
                 System.out.println(/*empty line*/);
             } catch (IUserDAO.DALException e) {
                 System.out.println("Brugeren findes ikke eller ingen internetforbindelse\n");
@@ -200,25 +210,34 @@ public class TUI {
         do {
             System.out.print("Nyt brugernavn: ");
             userName = input.next();
-            if(userName.length() >= 2 && userName.length() <= 20) { success = true; }
+            if(userName.equals("-") || userName.length() >= 2 && userName.length() <= 20) { success = true; }
         } while (!success);
         success = false;
         do {
             System.out.print("Nye initialer: ");
             ini = input.next();
-            if(ini.length() >= 2 && ini.length() <=4) { success = true; }
+            if(ini.equals("-") || ini.length() >= 2 && ini.length() <=4) { success = true; }
         } while (!success);
         success = false;
         do {
             System.out.print("Nyt CPR-nummer: ");
             cpr = input.next();
-            if(cpr.length() == 10) { success = true; }
+            if(cpr.equals("-")) {
+                success = true;
+            } else if(cpr.length() == 10) {
+                try {
+                    Integer.parseInt(cpr);
+                    success = true;
+                } catch (NumberFormatException e) {
+                    System.out.println("Skriv kun tal.");
+                }
+            }
         } while (!success);
         success = false;
         do {
             System.out.print("Ny adgangskode: ");
             passwordToUpdate = input.next();
-            if(passwordToUpdate.length() >= 6) { success = true; }
+            if(passwordToUpdate.equals("-") || passwordToUpdate.length() >= 6) { success = true; }
         } while (!success);
         success = false;
         do {
@@ -226,14 +245,17 @@ public class TUI {
             roles = input.next();
             String[] tempRoles = roles.split(", ");
             int successCounter = 0;
-            for(int i = 0; i < tempRoles.length; i++) {
-                if(tempRoles[i].equalsIgnoreCase("/*SKRIV HER*/")) { // TODO: 01-03-2019 sammenlign med de roller man må være
-                    successCounter++;
+            if(roles.equals("-")) {
+                success = true;
+            } else {
+                for(int i = 0; i < tempRoles.length; i++) {
+                    if(tempRoles[i].equalsIgnoreCase("/*SKRIV HER*/")) { // TODO: 01-03-2019 sammenlign med de roller man må være
+                        successCounter++;
+                    }
                 }
+                if(successCounter == tempRoles.length) { success = true; }
             }
-            if(successCounter == tempRoles.length) { success = true; }
         } while (!success);
-
 
         try {
             String passEncrypt;

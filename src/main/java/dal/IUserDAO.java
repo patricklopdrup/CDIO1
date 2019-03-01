@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IUserDAO {
 
-    UserDTO getUser(String password) throws DALException;
+    UserDTO getUser(String password) throws DALException; // TODO: 01-03-2019 ændre til int userID og lav userID så de vælger mellem 11-99
     List<UserDTO> getUserList() throws DALException;
     void createUser(UserDTO user) throws DALException;
     void updateUser(UserDTO user) throws DALException;
