@@ -7,6 +7,7 @@ import java.sql.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class TUI {
@@ -145,25 +146,16 @@ public class TUI {
         success = false;
         boolean tempSuccess = false;
         String temppass;
-        do {
-            do {
-                System.out.print("Vælg password(mindst 6 tegn): ");
-                password = input.next();
-                if(password.length() >= 6) {
-                    tempSuccess = true;
-                } else {
-                    System.out.println("Password skal mindst være 6 tegn");
-                }
-            } while (!tempSuccess);
+        String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.-_+!?=";
+        StringBuilder pass = new StringBuilder();
+        Random rnd = new Random();
+        while (pass.length() < 8) {
+            int nextChar = (int) (rnd.nextDouble() * chars.length());
+            pass.append(chars.charAt(nextChar));
+        }
+        password = pass.toString();
 
-            System.out.print("Gentag password: ");
-            temppass = input.next();
-            if(temppass.equals(password)) {
-                success = true;
-            } else {
-                System.out.println("Password matcher ikke. Prøv igen.");
-            }
-        } while (!success);
+
 
         // FIXME: 28-02-2019 lav fix, hvis man vil starte helt forfra
 
