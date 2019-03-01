@@ -2,6 +2,7 @@ package dal;
 
 import dto.UserDTO;
 
+import javax.swing.*;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -73,7 +74,8 @@ public class TUI {
                 tempID = input.next();
                 userID = Integer.parseInt(tempID);
                 if(userID >= 11 && userID <= 99) {
-                    if(IDchecker(userID)) {
+                    int res = msgBox("Er du sikker på dit ID skal være: "+userID);
+                    if(IDchecker(userID) && res == 0) {
                         success = true;
                     } else {
                         System.out.println("Dette ID er allerede taget. Vælg et nyt.");
@@ -93,7 +95,8 @@ public class TUI {
             try {
                 System.out.print("Vælg brugernavn (2-20 tegn): ");
                 userName = input.next();
-                if(userName.length() >= 2 && userName.length() <= 20) {
+                int res = msgBox("Er du sikker på dit brugernavn skal være: "+userName);
+                if(userName.length() >= 2 && userName.length() <= 20 && res == 0) {
                     success = true;
                 } else {
                     System.out.println("Brugernavn skal være mellem 2-20 tegn.");
@@ -109,7 +112,8 @@ public class TUI {
             try {
                 System.out.print("Skriv initialer(2-4 tegn): ");
                 ini = input.next();
-                if(ini.length() >= 2 && ini.length() <= 4) {
+                int res = msgBox("Er du sikker på dine initialer skal være: "+ini);
+                if(ini.length() >= 2 && ini.length() <= 4 && res == 0) {
                     success = true;
                 } else {
                     System.out.println("Initialer skal være mellem 2-4 tegn.");
@@ -126,7 +130,8 @@ public class TUI {
                 System.out.print("Skriv CPR-nummer(kun tal): ");
                 cpr = input.next();
                 Long.parseLong(cpr);
-                if(cpr.length() == 10) {
+                int res = msgBox("Er du sikker på dit CPR-nummer skal være: "+cpr);
+                if(cpr.length() == 10 && res == 0) {
                     success = true;
                 } else {
                     System.out.println("Skriv alle 10 tal. Fx 1234567890");
@@ -167,15 +172,15 @@ public class TUI {
 
         //confirmation
         String passEncrypt = encryptPassword(password);
-        System.out.println("\nEr du sikker på, du vil oprette brugeren?: " +
+        int res = msgBox("\nEr du sikker på, du vil oprette brugeren?: " +
                 "\nBrugernavn: " + userName +
                 "\nInitialer: " + ini +
                 "\nCPR-nummer: " + cpr.substring(0, 6) + "-xxxx" +
-                "\nPassword: " + passEncrypt);
-        String confirme;
-        System.out.print("[Ja], [Nej]");
-        confirme = input.next();
-        if(confirme.equalsIgnoreCase("ja") || confirme.equalsIgnoreCase("yes")) {
+                "\nPassword: " + passEncrypt +
+                "\n\n Er ovenstående info korrekt?");
+
+
+        if(res == 0) {
             user.setUserID(userID);
             user.setUserName(userName);
             user.setIni(ini);
@@ -399,6 +404,13 @@ public class TUI {
             System.out.println(e.getMessage());
         }
         return true;
+    }
+    public  int msgBox(String infoMessage)
+    {
+        final JFrame parent = new JFrame();
+        parent.setAlwaysOnTop(true);
+        return JOptionPane.showConfirmDialog( parent ,infoMessage,"Message", JOptionPane.YES_NO_OPTION);
+
     }
 
     private boolean isParsableInt(String input) {
