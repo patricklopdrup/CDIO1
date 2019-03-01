@@ -98,11 +98,11 @@ public class UserDAOImpl implements IUserDAO{
     }
 
     @Override
-    public void deleteUser(int userId) throws DALException {
+    public void deleteUser(int userID) throws DALException {
         Connection c = createConnection();
         try {
             PreparedStatement st = c.prepareStatement("delete from " + database +
-                    "where userID = " + userId);
+                    "where userID = " + userID);
             st.executeUpdate();
         } catch (SQLException e) {
             throw new DALException(e.getMessage());

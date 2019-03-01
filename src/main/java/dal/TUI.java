@@ -339,9 +339,42 @@ public class TUI {
     }
 
     private void deleteUser() {
+        int userID = 0;
+        String tempUserID;
         System.out.println("--- Slet bruger ---");
-        System.out.print("Skriv adgangskode for at slette bruger: ");
-        // TODO: 01-03-2019 slet ved at skrive userID
+
+        do{
+            System.out.print("Skriv userID[int] til den bruger der skal slettes: ");
+            tempUserID = input.next();
+
+            if(isParsableInt(tempUserID)){
+                userID = Integer.parseInt(tempUserID);
+            }else{
+                System.out.println("Angiv et userID af typen int!");
+                System.out.println(/*Empty line for aesthetics*/);
+            }
+        }while(!isParsableInt(tempUserID));
+
+        System.out.print("Indtast koden til denne bruger: ");
+        String pw = input.next();
+        try{
+
+            if(!IDchecker(userID) && userDAO.getUser(userID).getPassword().equals(pw)){
+                System.out.println("Er du sikker på, at du vil slette brugeren: " + userID + "?");
+
+                String validation = input.next();
+                if(validation.equalsIgnoreCase("yes") || validation.equalsIgnoreCase("ja")){
+                    userDAO.deleteUser(userID);
+                    System.out.println("Brugeren med userID: " + userID + " er nu blevet slettet..");
+                }
+            }else{
+                System.out.println("Brugeren eksisterer enten ikke, eller også matchers koden ikke til userID'et");
+                System.out.println(/*Empty line for aesthetics*/);
+            }
+
+        } catch (IUserDAO.DALException e) {
+            System.out.println("Der må være en fejl i forbindelsen til databasen..");
+        }
     }
 
     private String encryptPassword(String password) {
