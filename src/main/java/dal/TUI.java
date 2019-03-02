@@ -68,7 +68,7 @@ public class TUI {
         String cpr = "";
         String password = "";
         List<String> roles;
-        String tempRoles = ""; // FIXME: 27-02-2019 skal man selv vælge roles? hvad med userID?
+        String tempRoles = "";
         System.out.println("--- Opret en bruger ---");
         //id
         do {
@@ -89,7 +89,6 @@ public class TUI {
             } catch (NumberFormatException e) {
                 System.out.println("Skriv et tal.");
             }
-            // TODO: 01-03-2019 skriv pass -> check ledighed -> giv dem id
         } while (!success);
 
         //username
@@ -145,8 +144,6 @@ public class TUI {
         } while(!success);
 
         //password
-        success = false;
-        boolean tempSuccess = false;
         String temppass;
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.-_+!?=";
         StringBuilder pass = new StringBuilder();
@@ -166,7 +163,6 @@ public class TUI {
             tempRoles = input.nextLine();
             temparr = tempRoles.split(", ");
             roles = new ArrayList<>(Arrays.asList(temparr));
-            System.out.println(roles);
             if(isRoleFree(roles)) {
                 success = true;
             }
@@ -174,12 +170,11 @@ public class TUI {
 
 
         //confirmation
-        String passEncrypt = encryptPassword(password);
         int res = msgBox("\nBrugernavn: " + userName +
                 "\nBruger-ID: " + userID +
                 "\nInitialer: " + ini +
                 "\nCPR-nummer: " + cpr.substring(0, 6) + "-xxxx" +
-                "\nPassword: " + passEncrypt +
+                "\nPassword: " + password +
                 "\n\n Er ovenstående info korrekt?");
 
 
@@ -293,7 +288,7 @@ public class TUI {
                 success = true;
             } else {
                 for(int i = 0; i < tempRoles.length; i++) {
-                    if(tempRoles[i].equalsIgnoreCase("/*SKRIV HER*/")) { // TODO: 01-03-2019 sammenlign med de roller man må være
+                    if(tempRoles[i].equalsIgnoreCase("/*SKRIV HER*/")) {
                         successCounter++;
                     }
                 }
@@ -324,7 +319,7 @@ public class TUI {
                     "\nBrugernavn: " + userName +
                     "\nInitialer: " + ini +
                     "\nCPR-nummer: " + cpr.substring(0, 6) + "-xxxx" +
-                    "\nPassword: " + passEncrypt);
+                    "\nPassword: " + password);
             String confirme;
             System.out.print("[Ja], [Nej]");
             confirme = input.nextLine();
@@ -334,7 +329,6 @@ public class TUI {
                 userToUpdate.setIni(ini);
                 userToUpdate.setCpr(cpr);
                 userToUpdate.setPassword(password);
-                // FIXME: 28-02-2019 ordne roles, så den virker, når man ikke skriver noget i den står også højere oppe
                 userToUpdate.setRoles(Arrays.asList(roles.split(", ")));
                 userDAO.updateUser(userToUpdate);
                 System.out.println("Brugeren er blevet rettet.\n");
@@ -430,13 +424,9 @@ public class TUI {
 
     public boolean isRoleFree(List<String> roles) {
         List<String> possibleRoles = new ArrayList<>(Arrays.asList("admin", "pharmacist", "foreman", "operator"));
-        int counter = 0;
         for (int i = 0; i < roles.size(); i++) {
-            System.out.println(roles.get(i));
-            System.out.println(possibleRoles.contains(roles.get(i)));
             if (!possibleRoles.contains(roles.get(i))) return false;
         }
-
         return true;
     }
 
